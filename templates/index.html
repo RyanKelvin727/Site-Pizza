@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,10 +10,11 @@
     <header>
         <nav class="nav-bar">
             <div class="logo">
-                <h1>Pizza dos manos</h1>
+                <h1>Pizza dos Manos</h1>
             </div>
         </nav>
     </header>
+
     <main>
         <div class="container">
             <div class="topo-main">
@@ -21,6 +22,7 @@
                     <h1>Os mais pedidos</h1>
                 </div>
                 <div class="imagens">
+                    <!-- Adicionando imagens estáticas, você pode usar as imagens salvas no banco de dados também -->
                     <img src="/static/img/253447-378226756-original.jpg" alt="">
                     <img src="/static/img/dia-da-pizza-skkhweuqjcrq.webp" alt="">
                     <img src="/static/img/massa-pizza-receita-italiana.jpg" alt="">
@@ -28,50 +30,30 @@
                     <img src="/static/img/Pizza-Napolitana-CERAFLAME-500x375.jpg" alt="">
                 </div>
             </div>
+
             <div class="nome-pizzas">
-                <h1>PIZZAS</h1>
+                <h1>Pizzas</h1>
             </div>
+
             <div class="cardapio">
+                {% for produto in produtos %}
                 <div class="produto">
                     <div class="texto-produto">
-                        <strong>P - 4 FATIAS</strong> <br>Pizza com até 2 sabores e 4 fatias <br><strong>A partir de R$ 35,0</strong>
+                        <strong>{{ produto.nome }}</strong> <br>
+                        {{ produto.descricao }} <br>
+                        <strong>A partir de R$ {{ produto.preco }}</strong>
                     </div>
                     <div class="img-produto">
-                        <img src="/static/img/Pizza-3007395.jpg" alt="">
+                        <img src="{{ produto.imagem }}" alt="{{ produto.nome }}">
                     </div>
                 </div>
-
-                <div class="produto">
-                    <div class="texto-produto">
-                        <strong>P - 4 FATIAS</strong> <br>Pizza com até 2 sabores e 4 fatias <br><strong>A partir de R$ 35,0</strong>
-                    </div>
-                    <div class="img-produto">
-                        <img src="/static/img/Pizza-3007395.jpg" alt="">
-                    </div>
-                </div>
-
-                <div class="produto">
-                    <div class="texto-produto">
-                        <strong>P - 4 FATIAS</strong> <br>Pizza com até 2 sabores e 4 fatias <br><strong>A partir de R$ 35,0</strong>
-                    </div>
-                    <div class="img-produto">
-                        <img src="/static/img/Pizza-3007395.jpg" alt="">
-                    </div>
-                </div>
-
-                <div class="produto">
-                    <div class="texto-produto">
-                        <strong>P - 4 FATIAS</strong> <br>Pizza com até 2 sabores e 4 fatias <br><strong>A partir de R$ 35,0</strong>
-                    </div>
-                    <div class="img-produto">
-                        <img src="/static/img/Pizza-3007395.jpg" alt="">
-                    </div>
-                </div>
+                {% endfor %}
             </div>
         </div>
     </main>
-    <footer>
 
+    <footer>
+        <!-- Você pode adicionar um rodapé aqui se necessário -->
     </footer>
 </body>
 </html>

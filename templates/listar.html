@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Produtos</title>
+</head>
+<body>
+    <header>
+        <h1>Lista de Produtos</h1>
+    </header>
+
+    <main>
+        <div>
+            {% for produto in produtos %}
+            <div>
+                <h3>{{ produto.nome }}</h3>
+                <p>{{ produto.descricao }}</p>
+                <p>Preço: R$ {{ produto.preco }}</p>
+                {% if produto.imagem %}
+                    <img src="{{ produto.imagem }}" alt="{{ produto.nome }}" width="100">
+                {% else %}
+                    <p>Imagem não disponível</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+</body>
+</html>
