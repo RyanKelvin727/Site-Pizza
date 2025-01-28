@@ -3,57 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link rel="stylesheet" href="/static/style.css">
-    <title>Site Pizza</title>
+    <title>Pizza dos Manos</title>
+    <link rel="icon" href="/static/img/favicon.ico"> <!-- Favicon -->
 </head>
 <body>
     <header>
         <nav class="nav-bar">
             <div class="logo">
-                <h1>Pizza dos Manos</h1>
+                <h1><a href="/" title="Página inicial">Pizza dos Manos</a></h1> <!-- Link para voltar ao início -->
             </div>
         </nav>
     </header>
 
     <main>
-        <div class="container">
-            <div class="topo-main">
-                <div>
-                    <h1>Os mais pedidos</h1>
-                </div>
+        <section class="banner">
+            <div class="container">
+                <h2>Os sabores mais pedidos pelos nossos clientes!</h2>
                 <div class="imagens">
-                    <!-- Adicionando imagens estáticas, você pode usar as imagens salvas no banco de dados também -->
-                    <img src="/static/img/253447-378226756-original.jpg" alt="">
-                    <img src="/static/img/dia-da-pizza-skkhweuqjcrq.webp" alt="">
-                    <img src="/static/img/massa-pizza-receita-italiana.jpg" alt="">
-                    <img src="/static/img/Pizza-3007395.jpg" alt="">
-                    <img src="/static/img/Pizza-Napolitana-CERAFLAME-500x375.jpg" alt="">
+                    <!-- Adicionando imagens promocionais -->
+                    <img src="/static/img/253447-378226756-original.jpg" alt="Pizza com queijo e pepperoni">
+                    <img src="/static/img/dia-da-pizza-skkhweuqjcrq.webp" alt="Pizza no forno">
+                    <img src="/static/img/massa-pizza-receita-italiana.jpg" alt="Massa de pizza italiana">
+                    <img src="/static/img/Pizza-3007395.jpg" alt="Pizza com queijo e tomates frescos">
+                    <img src="/static/img/Pizza-Napolitana-CERAFLAME-500x375.jpg" alt="Pizza napolitana com ingredientes frescos">
                 </div>
             </div>
+        </section>
 
-            <div class="nome-pizzas">
-                <h1>Pizzas</h1>
-            </div>
-
-            <div class="cardapio">
-                {% for produto in produtos %}
-                <div class="produto">
-                    <div class="texto-produto">
-                        <strong>{{ produto.nome }}</strong> <br>
-                        {{ produto.descricao }} <br>
-                        <strong>A partir de R$ {{ produto.preco }}</strong>
+        <section id="produtos" class="produtos">
+            <div class="container">
+                <h2 class="titulo-produtos">Nossas Pizzas</h2>
+                <div class="cardapio">
+                    {% for produto in produtos %}
+                    <div class="produto">
+                        <div class="imagem-produto">
+                            <img src="{{ url_for('static', filename=produto.imagem) }}" alt="{{ produto.nome }}">
+                        </div>
+                        <div class="descricao-produto">
+                            <h3>{{ produto.nome }}</h3>
+                            <p>{{ produto.descricao }}</p>
+                            <p class="preco">A partir de R$ {{ produto.preco }}</p>
+                            <button class="btn-comprar" title="Comprar">Comprar</button>
+                        </div>
                     </div>
-                    <div class="img-produto">
-                        <img src="{{ produto.imagem }}" alt="{{ produto.nome }}">
-                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
-        </div>
+        </section>
     </main>
 
     <footer>
-        <!-- Você pode adicionar um rodapé aqui se necessário -->
+        <div class="container">
+            <p>&copy; 2025 Pizza dos Manos. Todos os direitos reservados.</p>
+            <div class="social">
+                <a href="#" title="Facebook"><img src="/static/img/facebook-icon.png" alt="Facebook"></a>
+                <a href="#" title="Instagram"><img src="/static/img/instagram-icon.png" alt="Instagram"></a>
+                <a href="#" title="Twitter"><img src="/static/img/twitter-icon.png" alt="Twitter"></a>
+            </div>
+        </div>
     </footer>
 </body>
 </html>

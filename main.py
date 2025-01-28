@@ -8,7 +8,7 @@ app = Flask(__name__)
 # Configurações do banco de dados e do upload de arquivos
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///produtos.db'  # Banco de dados SQLite local
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = '/static/uploads'  # Pasta para armazenar as imagens
+app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'uploads')  # Pasta para armazenar as imagens
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
 
 # Inicializando o banco de dados
@@ -25,27 +25,28 @@ class Produto(db.Model):
     def __repr__(self):
         return f'<Produto {self.nome}>'
 
-# Criando o banco de dados (apenas uma vez, se necessário)
-with app.app_context():
-    db.create_all()
-
 # Função para verificar o tipo de arquivo
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-# Rota para a página principal
+# Função para criar o banco de dados
+def create_db():
+    with app.app_context():
+        db.create_all()
+
+# Rota para a página principal (index.html)
 @app.route('/')
 def home():
-    # Buscando todos os produtos para exibir
     produtos = Produto.query.all()
     return render_template('index.html', produtos=produtos)
 
-# Rota para a página CRUD (criação, edição, deleção)
+# Rota para a página CRUD (criação e edição de produtos)
 @app.route('/crud', methods=['GET', 'POST'])
-def crud():
-    # Verificando se a pasta de uploads existe, senão cria
-    if not os.path.exists(app.config['UPLOAD_FOLDER']):
-        os.makedirs(app.config['UPLOAD_FOLDER'])
+@app.route('/crud/<int:produto_id>', methods=['GET', 'POST'])  # Permitir editar um produto específico
+def crud(produto_id=None):
+    produto = None
+    if produto_id:  # Se produto_id for fornecido, buscamos o produto para editar
+        produto = Produto.query.get(produto_id)
 
     if request.method == 'POST':
         nome = request.form['nome']
@@ -55,61 +56,38 @@ def crud():
         imagem = request.files['imagem']
         if imagem and allowed_file(imagem.filename):
             filename = secure_filename(imagem.filename)
+            if not os.path.exists(app.config['UPLOAD_FOLDER']):
+                os.makedirs(app.config['UPLOAD_FOLDER'])
             imagem.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            imagem_url = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            imagem_url = f'uploads/{filename}'  # Caminho relativo para a pasta static
         else:
             imagem_url = None
 
-        produto_id = request.form.get('produto_id')
-        if produto_id:  # Caso seja edição
-            produto = Produto.query.get(produto_id)
+        if produto:  # Se produto existe (edição)
             produto.nome = nome
             produto.descricao = descricao
             produto.preco = preco
             produto.imagem = imagem_url if imagem_url else produto.imagem
             db.session.commit()
-        else:  # Caso seja criação
+        else:  # Se não existir (criação)
             novo_produto = Produto(nome=nome, descricao=descricao, preco=preco, imagem=imagem_url)
             db.session.add(novo_produto)
             db.session.commit()
 
-        return redirect(url_for('home'))
+        return redirect(url_for('crud'))  # Redireciona para a página de CRUD
 
-    return render_template('crud.html')
+    produtos = Produto.query.all()  # Lista de todos os produtos
+    return render_template('crud.html', produto=produto, produtos=produtos)  # Passa o produto para o template
 
-# Rota para editar um produto
-@app.route('/editar/<int:id>', methods=['GET', 'POST'])
-def editar(id):
-    produto = Produto.query.get_or_404(id)
-    if request.method == 'POST':
-        produto.nome = request.form['nome']
-        produto.descricao = request.form['descricao']
-        produto.preco = float(request.form['preco'])
-        
-        imagem = request.files['imagem']
-        if imagem and allowed_file(imagem.filename):
-            filename = secure_filename(imagem.filename)
-            imagem.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            produto.imagem = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        
-        db.session.commit()
-        return redirect(url_for('home'))
-    
-    return render_template('editar.html', produto=produto)
 
-# Rota para deletar um produto
+# Função para deletar um produto
 @app.route('/deletar/<int:id>', methods=['GET'])
 def deletar(id):
     produto = Produto.query.get_or_404(id)
     db.session.delete(produto)
     db.session.commit()
-    return redirect(url_for('home'))
-
-# Rota para listar produtos
-@app.route('/listar')
-def listar():
-    produtos = Produto.query.all()
-    return render_template('listar.html', produtos=produtos)
+    return redirect(url_for('crud'))
 
 if __name__ == '__main__':
+    create_db()  # Garantir que o banco de dados seja criado ao iniciar o app
     app.run(debug=True)
