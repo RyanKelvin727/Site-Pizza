@@ -32,7 +32,7 @@
     <main>
         <div class="container">
             <!-- Formulário para adicionar ou editar produtos -->
-            <<form action="/crud/{{ produto.id if produto else '' }}" method="POST" enctype="multipart/form-data" class="form-produto">
+            <form action="{% if produto %}/crud/{{ produto.id }}{% else %}/crud{% endif %}" method="POST" enctype="multipart/form-data" class="form-produto">
                 <label for="nome">Nome:</label>
                 <input type="text" id="nome" name="nome" value="{{ produto.nome if produto else '' }}" required><br>
             
@@ -52,6 +52,7 @@
                 <input type="hidden" name="produto_id" value="{{ produto.id if produto else '' }}">
                 <button type="submit">Salvar</button>
             </form>
+            
 
             <h2>Lista de Produtos</h2>
             <!-- Tabela para listar os produtos adicionados -->
