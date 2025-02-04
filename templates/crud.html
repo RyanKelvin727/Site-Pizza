@@ -32,21 +32,23 @@
     <main>
         <div class="container">
             <!-- Formulário para adicionar ou editar produtos -->
-            <form action="/crud" method="POST" enctype="multipart/form-data" class="form-produto">
+            <<form action="/crud/{{ produto.id if produto else '' }}" method="POST" enctype="multipart/form-data" class="form-produto">
                 <label for="nome">Nome:</label>
-                <input type="text" id="nome" name="nome" required><br>
-
+                <input type="text" id="nome" name="nome" value="{{ produto.nome if produto else '' }}" required><br>
+            
                 <label for="descricao">Descrição:</label>
-                <textarea id="descricao" name="descricao" required></textarea><br>
-
+                <textarea id="descricao" name="descricao" required>{{ produto.descricao if produto else '' }}</textarea><br>
+            
                 <label for="preco">Preço:</label>
-                <input type="number" id="preco" name="preco" step="0.01" required><br>
-
+                <input type="number" id="preco" name="preco" value="{{ produto.preco if produto else '' }}" step="0.01" required><br>
+            
                 <label for="imagem">Imagem:</label>
                 <input type="file" id="imagem" name="imagem" onchange="previewImage()"><br>
-
-                <img id="imagemPreview" src="" alt="Pré-visualização da Imagem" style="display:none; width: 150px; margin-top: 10px;"/><br>
-
+            
+                {% if produto and produto.imagem %}
+                    <img src="{{ url_for('static', filename=produto.imagem) }}" alt="{{ produto.nome }}" width="100"><br>
+                {% endif %}
+            
                 <input type="hidden" name="produto_id" value="{{ produto.id if produto else '' }}">
                 <button type="submit">Salvar</button>
             </form>

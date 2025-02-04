@@ -42,42 +42,43 @@ def home():
 
 # Rota para a página CRUD (criação e edição de produtos)
 @app.route('/crud', methods=['GET', 'POST'])
-@app.route('/crud/<int:produto_id>', methods=['GET', 'POST'])  # Permitir editar um produto específico
+@app.route('/crud/<int:produto_id>', methods=['GET', 'POST'])
 def crud(produto_id=None):
-    produto = None
-    if produto_id:  # Se produto_id for fornecido, buscamos o produto para editar
-        produto = Produto.query.get(produto_id)
+    if produto_id:
+        produto = Produto.query.get(produto_id)  # Carrega o produto existente para editar
+    else:
+        produto = None
 
     if request.method == 'POST':
         nome = request.form['nome']
         descricao = request.form['descricao']
-        preco = float(request.form['preco'])
+        preco = request.form['preco']
+        imagem = request.files['imagem'] if 'imagem' in request.files else None
 
-        imagem = request.files['imagem']
-        if imagem and allowed_file(imagem.filename):
-            filename = secure_filename(imagem.filename)
-            if not os.path.exists(app.config['UPLOAD_FOLDER']):
-                os.makedirs(app.config['UPLOAD_FOLDER'])
-            imagem.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            imagem_url = f'uploads/{filename}'  # Caminho relativo para a pasta static
-        else:
-            imagem_url = None
-
-        if produto:  # Se produto existe (edição)
+        if produto_id:
+            # Editar produto existente
             produto.nome = nome
             produto.descricao = descricao
             produto.preco = preco
-            produto.imagem = imagem_url if imagem_url else produto.imagem
+            if imagem:
+                imagem_filename = imagem.filename
+                imagem.save(f'static/{imagem_filename}')
+                produto.imagem = imagem_filename
             db.session.commit()
-        else:  # Se não existir (criação)
-            novo_produto = Produto(nome=nome, descricao=descricao, preco=preco, imagem=imagem_url)
+        else:
+            # Adicionar novo produto
+            imagem_filename = None
+            if imagem:
+                imagem_filename = imagem.filename
+                imagem.save(f'static/{imagem_filename}')
+            novo_produto = Produto(nome=nome, descricao=descricao, preco=preco, imagem=imagem_filename)
             db.session.add(novo_produto)
             db.session.commit()
 
-        return redirect(url_for('crud'))  # Redireciona para a página de CRUD
+        return redirect(url_for('crud'))
 
-    produtos = Produto.query.all()  # Lista de todos os produtos
-    return render_template('crud.html', produto=produto, produtos=produtos)  # Passa o produto para o template
+    # Caso seja uma requisição GET, renderiza o formulário com as informações do produto
+    return render_template('crud.html', produto=produto, produtos=Produto.query.all())
 
 
 # Função para deletar um produto
