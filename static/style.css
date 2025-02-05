@@ -265,6 +265,37 @@ footer .social img:hover {
     opacity: 0.7;
 }
 
+.social a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+}
+
+.social .icon {
+    margin-right: 8px; /* Espaço entre o ícone e o texto */
+    font-size: 20px;
+}
+
+.facebook-icon::before {
+    content: "\f09a"; /* Código Unicode para o ícone do Facebook */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+}
+
+.instagram-icon::before {
+    content: "\f16d"; /* Código Unicode para o ícone do Instagram */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+}
+
+.twitter-icon::before {
+    content: "\f099"; /* Código Unicode para o ícone do Twitter */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+}
+
+
 /* Responsividade */
 @media screen and (max-width: 768px) {
     .nav-bar .menu {
